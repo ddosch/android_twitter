@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <ImageView
+        android:id="@+id/ivComposeProfileImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:contentDescription="@string/profile_image"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tvComposeName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivComposeProfileImage"
+        android:text="@string/foo_user_name"
+        android:paddingLeft="3dp"
+        android:paddingTop="13dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvComposeScreenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvComposeName"
+        android:layout_toRightOf="@+id/ivComposeProfileImage"
+        android:text="@string/foo_user_name"
+        android:textColor="#888888"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp" />
+
+    <EditText
+        android:id="@+id/etTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivComposeProfileImage"
+        android:gravity="top|left"
+        android:inputType="textMultiLine"
+        android:lines="20"
+        android:minLines="5"
+        android:scrollHorizontally="false"
+        android:scrollbars="vertical"
+        android:singleLine="false" >
+        <requestFocus />
+    </EditText>
+    
+</RelativeLayout>
