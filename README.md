@@ -2,7 +2,7 @@
 
 This app mimics the basic functionality of twitter
 
-Time spent: ? hours
+Time spent: 6 hours
 
 Completed user stories:
 
