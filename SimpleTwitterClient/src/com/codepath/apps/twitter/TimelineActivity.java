@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,16 @@ public class TimelineActivity extends Activity {
 		    }
 		});
 		populateTimeline("1", null);
+		
+		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
+		swipeView.setColorSchemeColors(android.R.color.holo_blue_dark,   android.R.color.holo_blue_light, 
+									   android.R.color.holo_green_light, android.R.color.holo_green_light);
+        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getNewestTweets();
+            }
+        });
 	}
 	
 	@Override

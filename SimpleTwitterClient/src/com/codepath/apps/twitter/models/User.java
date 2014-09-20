@@ -10,7 +10,7 @@ import com.activeandroid.annotation.Table;
 @Table(name = "Users")
 public class User extends Model {
 
-	@Column(name = "uid", unique = true)
+	@Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
 	
 	@Column(name = "name")

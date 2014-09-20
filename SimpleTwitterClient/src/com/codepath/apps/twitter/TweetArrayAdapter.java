@@ -89,8 +89,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 				client.retweet(new JsonHttpResponseHandler() {
 					@Override
 					public void onSuccess(JSONObject obj) {
-						final TimelineActivity ta = (TimelineActivity)getContext();
-						ta.getNewestTweets();
+						tvRetweets.setText("" + (tweet.getRetweetCount() + 1));
 						tvRetweets.setTextColor(Color.parseColor("#177245"));
 						ivRetweet.setImageResource(R.drawable.ic_retweet_highlighted);
 					}
@@ -118,8 +117,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 				client.favorite(new JsonHttpResponseHandler() {
 					@Override
 					public void onSuccess(JSONObject obj) {
-						final TimelineActivity ta = (TimelineActivity)getContext();
-						ta.getNewestTweets();
+						tvStars.setText("" + (tweet.getFavoriteCount() + 1));
 						tvStars.setTextColor(Color.parseColor("#F28500"));
 						ivStar.setImageResource(R.drawable.ic_star_highlighted);
 					}
