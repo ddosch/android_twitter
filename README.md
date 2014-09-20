@@ -18,7 +18,7 @@ Completed user stories:
    * [x] User can enter a message and hit a button to post to twitter
    * [x] User should be taken back to home timeline with new tweet visible
    * [x] Optional: User can see a counter with total number of characters left for tweet
- * [ ] Optional: User can refresh tweets timeline by pulling down to refresh (i.e pull-to-refresh)
+ * [x] Optional: User can refresh tweets timeline by pulling down to refresh (i.e pull-to-refresh)
  * [x] Optional: User can open the twitter app offline and see last loaded tweets
    * [x] Tweets are persisted into sqlite and can be displayed from the local DB
  * [ ] Optional: User can tap a tweet to display a "detailed" view of that tweet
