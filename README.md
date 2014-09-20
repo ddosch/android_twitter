@@ -17,16 +17,16 @@ Completed user stories:
    * [x] User will have a Compose view opened
    * [x] User can enter a message and hit a button to post to twitter
    * [x] User should be taken back to home timeline with new tweet visible
-   * [ ] Optional: User can see a counter with total number of characters left for tweet
+   * [x] Optional: User can see a counter with total number of characters left for tweet
  * [ ] Optional: User can refresh tweets timeline by pulling down to refresh (i.e pull-to-refresh)
- * [ ] Optional: User can open the twitter app offline and see last loaded tweets
-   * [ ] Tweets are persisted into sqlite and can be displayed from the local DB
+ * [x] Optional: User can open the twitter app offline and see last loaded tweets
+   * [x] Tweets are persisted into sqlite and can be displayed from the local DB
  * [ ] Optional: User can tap a tweet to display a "detailed" view of that tweet
  * [ ] Optional: User can select "reply" from detail view to respond to a tweet
  * [ ] Optional: Improve the user interface and theme the app to feel twitter branded
  * [ ] Stretch: User can see an embedded media (image) within tweet detail view
  * [ ] Stretch: Compose View activity is replaced with a modal overlay
- * [x] Extra: User can retweet and favorite tweets
+ * [x] Extra: User can retweet and favorite 
 
 Walkthrough of all user stories:
 
