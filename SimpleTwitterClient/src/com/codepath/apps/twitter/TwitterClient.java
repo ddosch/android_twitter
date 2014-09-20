@@ -5,8 +5,10 @@ import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
 
+import com.codepath.apps.twitter.models.Tweet;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 /*
@@ -32,17 +34,21 @@ public class TwitterClient extends OAuthBaseClient {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 	
-	public void getHomeTimeline(AsyncHttpResponseHandler handler, String sinceId, String maxId) {
-		final String apiUrl = getApiUrl("statuses/home_timeline.json");
-		final RequestParams params = new RequestParams();
-		if (sinceId != null) {
-			params.put("since_id", sinceId);
+	public void getHomeTimeline(JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected) {
+		if (connected) {
+			final String apiUrl = getApiUrl("statuses/home_timeline.json");
+			final RequestParams params = new RequestParams();
+			if (sinceId != null) {
+				params.put("since_id", sinceId);
+			}
+			if (maxId != null) {
+				params.put("max_id", maxId);
+			}
+			final boolean haveParams = !(sinceId == null && maxId == null);
+			client.get(apiUrl, haveParams ? params : null, handler);
+		} else {
+			handler.onSuccess(Tweet.recentItemsAsJSONArray(maxId == null ? null : Long.parseLong(maxId)));
 		}
-		if (maxId != null) {
-			params.put("max_id", maxId);
-		}
-		final boolean haveParams = !(sinceId == null && maxId == null);
-		client.get(apiUrl, haveParams ? params : null, handler);
 	}
 	
 	public void postTweet(AsyncHttpResponseHandler handler, String status) {

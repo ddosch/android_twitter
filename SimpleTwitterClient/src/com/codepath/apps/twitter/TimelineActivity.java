@@ -6,7 +6,10 @@ import java.util.Collections;
 import org.json.JSONArray;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,7 +34,6 @@ public class TimelineActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApp.getRestClient();
-		populateTimeline("1", null);
 		lvTweets = (ListView)findViewById(R.id.lvTweets);
 		tweets = new ArrayList<Tweet>();
 		aTweets = new TweetArrayAdapter(this, tweets);
@@ -42,17 +44,7 @@ public class TimelineActivity extends Activity {
 		        loadOlderTweets();
 		    }
 		});
-//		lvTweets.setOnItemClickListener(new OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				final Tweet tweet = tweets.get(position);
-//				switch (view.getId()) {
-//					case R.id.ivRetweet: retweet(tweet); break;
-//					case R.id.ivStar: favorite(tweet); break;
-//					default: break;
-//				}
-//			}
-//		});
+		populateTimeline("1", null);
 	}
 	
 	@Override
@@ -85,7 +77,7 @@ public class TimelineActivity extends Activity {
 				Log.d("debug", t.toString());
 				Log.d("debug", s);
 			}
-		}, sinceId, maxId);
+		}, sinceId, maxId, isConnected());
 	}
 	
 	public void getNewestTweets() {
@@ -109,7 +101,7 @@ public class TimelineActivity extends Activity {
 				Log.d("debug", t.toString());
 				Log.d("debug", s);
 			}
-		}, sinceId, null);
+		}, sinceId, null, isConnected());
 	}
 	
 	private void loadOlderTweets() {
@@ -119,5 +111,17 @@ public class TimelineActivity extends Activity {
 		}
 		final String maxId = tweets.isEmpty() ? null : "" + minId;
 		populateTimeline("1", maxId);
+	}
+	
+	private boolean isConnected() {
+	    final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    final NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+	    final NetworkInfo mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+	    if ((wifiInfo != null && wifiInfo.isConnected()) || (mobileInfo != null && mobileInfo.isConnected())) {
+	    	return true;
+	    } else {
+	    	return false;
+	    }
 	}
 }

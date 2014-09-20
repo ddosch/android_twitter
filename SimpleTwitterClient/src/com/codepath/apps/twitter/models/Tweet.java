@@ -2,6 +2,7 @@ package com.codepath.apps.twitter.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
@@ -9,17 +10,45 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Tweet {
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 
-	private String body;
+@Table(name="Tweets")
+public class Tweet extends Model {
+
+	@Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
+	
+	@Column(name = "body")
+	private String body;
+	
+	@Column(name = "createdAt")
 	private String createdAt;
+	
+	@Column(name = "relativeCreated")
 	private String relativeCreated;
+	
+	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
+	
+	@Column(name = "retweeted")
 	private boolean retweeted;
+	
+	@Column(name = "retweetCount")
 	private long retweetCount;
+	
+	@Column(name = "favorited")
 	private boolean favorited;
+	
+	@Column(name = "favoriteCount")
 	private long favoriteCount;
+	
+	public Tweet() {
+		super();
+	}
 	
 	public static Tweet fromJson(JSONObject json) {
 		final Tweet tweet = new Tweet();
@@ -37,6 +66,7 @@ public class Tweet {
 			e.printStackTrace();
 			return null;
 		}
+		tweet.save();
 		return tweet;
 	}
 	
@@ -119,5 +149,40 @@ public class Tweet {
 
 	public long getFavoriteCount() {
 		return favoriteCount;
+	}
+	
+	public JSONObject toJSONObject() {
+		final JSONObject json = new JSONObject();
+		try {
+			json.put("id", uid);
+			json.put("text", body);
+			json.put("created_at", createdAt);
+			json.put("retweeted", retweeted);
+			json.put("retweet_count", retweetCount);
+			json.put("favorited", favorited);
+			json.put("favorite_count", favoriteCount);
+			if (user != null) {
+				json.put("user", user.toJSONObject());
+			}
+		} catch (JSONException e) {
+			return null;
+		}
+		return json;
+	}
+	
+	public static List<Tweet> recentItems(Long id) {
+		if (id == null) {
+			return new Select().from(Tweet.class).orderBy("uid DESC").limit("25").execute();
+		}
+		return new Select().from(Tweet.class).where("uid < ?", id).orderBy("uid DESC").limit("25").execute();
+	}
+	
+	public static JSONArray recentItemsAsJSONArray(Long id) {
+		final List<Tweet> tweets = recentItems(id);
+		final JSONArray array = new JSONArray();
+		for (Tweet tweet : tweets) {
+			array.put(tweet.toJSONObject());
+		}
+		return array;
 	}
 }

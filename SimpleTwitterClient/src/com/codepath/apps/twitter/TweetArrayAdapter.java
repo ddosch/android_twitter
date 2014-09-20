@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +68,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 	
 	private void loadBody(View v, Tweet tweet) {
 		final TextView tvBody = (TextView)v.findViewById(R.id.tvBody);
-		tvBody.setText(Html.fromHtml(tweet.getBody()));
+		tvBody.setText(tweet.getBody());
 	}
 	
 	private void loadRelativeCreated(View v, Tweet tweet) {

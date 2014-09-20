@@ -18,6 +18,7 @@
     <string name="cd_reply">Reply</string>
     <string name="mi_compose">Compose</string>
     <string name="mi_tweet">Tweet</string>
+    <string name="mi_remaining">140</string>
     <string name="title_activity_compose">ComposeActivity</string>
 
 </resources>

@@ -3,12 +3,28 @@ package com.codepath.apps.twitter.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class User {
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 
-	private String name;
+@Table(name = "Users")
+public class User extends Model {
+
+	@Column(name = "uid", unique = true)
 	private long uid;
+	
+	@Column(name = "name")
+	private String name;
+	
+	@Column(name = "screenName")
 	private String screenName;
+	
+	@Column(name = "profileImageUrl")
 	private String profileImageUrl;
+	
+	public User() {
+		super();
+	}
 	
 	public static User fromJson(JSONObject json) {
 		final User user = new User();
@@ -21,6 +37,7 @@ public class User {
 			e.printStackTrace();
 			return null;
 		}
+		user.save();
 		return user;
 	}
 
@@ -39,5 +56,17 @@ public class User {
 	public String getProfileImageUrl() {
 		return profileImageUrl;
 	}
-
+	
+	public JSONObject toJSONObject() {
+		final JSONObject json = new JSONObject();
+		try {
+			json.put("id", uid);
+			json.put("name", name);
+			json.put("screen_name", screenName);
+			json.put("profile_image_url", profileImageUrl);
+		} catch (JSONException e) {
+			return null;
+		}
+		return json;
+	}
 }
