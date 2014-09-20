@@ -23,7 +23,7 @@ Completed user stories:
    * [x] Tweets are persisted into sqlite and can be displayed from the local DB
  * [ ] Optional: User can tap a tweet to display a "detailed" view of that tweet
  * [ ] Optional: User can select "reply" from detail view to respond to a tweet
- * [ ] Optional: Improve the user interface and theme the app to feel twitter branded
+ * [x] Optional: Improve the user interface and theme the app to feel twitter branded
  * [ ] Stretch: User can see an embedded media (image) within tweet detail view
  * [ ] Stretch: Compose View activity is replaced with a modal overlay
  * [x] Extra: User can retweet and favorite 
