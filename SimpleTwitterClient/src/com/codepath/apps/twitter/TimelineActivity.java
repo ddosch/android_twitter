@@ -1,61 +1,52 @@
 package com.codepath.apps.twitter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import org.json.JSONArray;
-
-import android.app.Activity;
-import android.content.Context;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-import com.codepath.apps.twitter.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.codepath.apps.twitter.fragments.HomeTimelineFragment;
+import com.codepath.apps.twitter.fragments.MentionsTimelineFragment;
+import com.codepath.apps.twitter.listeners.FragmentTabListener;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends FragmentActivity {
 
 	private static final int ACTIVITY_NUM_COMPOSE = 1;
-	
-	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> aTweets;
-	private ListView lvTweets;
+	private static final int ACTIVITY_NUM_PROFILE = 2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		client = TwitterApp.getRestClient();
-		lvTweets = (ListView)findViewById(R.id.lvTweets);
-		tweets = new ArrayList<Tweet>();
-		aTweets = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(aTweets);
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-		    @Override
-		    public void onLoadMore(int page, int totalItemsCount) {
-		        loadOlderTweets();
-		    }
-		});
-		populateTimeline("1", null);
-		
-		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
-		swipeView.setColorSchemeColors(android.R.color.holo_blue_dark,   android.R.color.holo_blue_light, 
-									   android.R.color.holo_green_light, android.R.color.holo_green_light);
-        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getNewestTweets();
-            }
-        });
+		setupTabs();
+	}
+
+	private void setupTabs() {
+		final ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+
+		final Tab tab1 = actionBar
+			.newTab()
+			.setText("Home")
+			.setIcon(R.drawable.ic_home)
+			.setTag("HomeTimelineFragment")
+			.setTabListener(new FragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this, "home", HomeTimelineFragment.class));
+
+		actionBar.addTab(tab1);
+		actionBar.selectTab(tab1);
+
+		final Tab tab2 = actionBar
+			.newTab()
+			.setText("Mentions")
+			.setIcon(R.drawable.ic_mentions)
+			.setTag("MentionsTimelineFragment")
+			.setTabListener(new FragmentTabListener<MentionsTimelineFragment>(R.id.flContainer, this, "mentions", MentionsTimelineFragment.class));
+
+		actionBar.addTab(tab2);
 	}
 	
 	@Override
@@ -68,71 +59,15 @@ public class TimelineActivity extends Activity {
 	     startActivityForResult(new Intent(this, ComposeActivity.class), ACTIVITY_NUM_COMPOSE);
 	}
 	
+	public void onProfile(MenuItem mi) {
+		startActivityForResult(new Intent(this, ProfileActivity.class), ACTIVITY_NUM_PROFILE);
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == ACTIVITY_NUM_COMPOSE && resultCode == RESULT_OK) {
-			getNewestTweets();
+//			getNewestTweets();
 		}
-	}
-
-	public void populateTimeline(String sinceId, String maxId) {
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray array) {
-				aTweets.addAll(Tweet.fromJsonArray(array));
-			}
-			
-			@Override
-			public void onFailure(Throwable t, String s) {
-				Log.d("debug", t.toString());
-				Log.d("debug", s);
-			}
-		}, sinceId, maxId, isConnected());
-	}
-	
-	public void getNewestTweets() {
-		long maxId = Long.MIN_VALUE;
-		for (Tweet tweet : tweets) {
-			maxId = Math.max(tweet.getUid(), maxId);
-		}
-		final String sinceId = tweets.isEmpty() ? "1" : "" + maxId;
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray array) {
-				final ArrayList<Tweet> tweets = Tweet.fromJsonArray(array);
-				Collections.reverse(tweets);
-				for (Tweet tweet : tweets) {
-					aTweets.insert(tweet, 0);
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable t, String s) {
-				Log.d("debug", t.toString());
-				Log.d("debug", s);
-			}
-		}, sinceId, null, isConnected());
-	}
-	
-	private void loadOlderTweets() {
-		long minId = Long.MAX_VALUE;
-		for (Tweet tweet : tweets) {
-			minId = Math.min(tweet.getUid(), minId);
-		}
-		final String maxId = tweets.isEmpty() ? null : "" + minId;
-		populateTimeline("1", maxId);
-	}
-	
-	private boolean isConnected() {
-	    final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    final NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-	    final NetworkInfo mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-	    if ((wifiInfo != null && wifiInfo.isConnected()) || (mobileInfo != null && mobileInfo.isConnected())) {
-	    	return true;
-	    } else {
-	    	return false;
-	    }
 	}
 }
