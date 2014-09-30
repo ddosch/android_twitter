@@ -28,9 +28,6 @@ public class Tweet extends Model {
 	@Column(name = "createdAt")
 	private String createdAt;
 	
-	@Column(name = "relativeCreated")
-	private String relativeCreated;
-	
 	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
 	
@@ -56,7 +53,6 @@ public class Tweet extends Model {
 			tweet.body = json.getString("text");
 			tweet.uid = json.getLong("id");
 			tweet.createdAt = json.getString("created_at");
-			tweet.relativeCreated = parseCreated(tweet.createdAt);
 			tweet.retweeted = json.optBoolean("retweeted");
 			tweet.retweetCount = json.optLong("retweet_count");
 			tweet.favorited = json.optBoolean("favorited");
@@ -70,16 +66,20 @@ public class Tweet extends Model {
 		return tweet;
 	}
 	
-	private static String parseCreated(String str) {
-		if (str == null) {
+	public String getRelativeCreated() {
+		if (createdAt == null) {
 			return null;
 		}
 		// Tue Aug 28 21:08:15 +0000 2012
 		try {
 			final String[] formats = new String[] { "EEE MMM d HH:mm:ss Z yyyy" };
-			final Date date = DateUtils.parseDate(str, formats);
+			final Date date = DateUtils.parseDate(createdAt, formats);
 			
 			long seconds = (new Date().getTime() - date.getTime()) / 1000;
+			if (seconds < 0) {
+				return "0s";
+			}
+			
 			if (seconds < 60) {
 				return seconds + "s";
 			}
@@ -129,10 +129,6 @@ public class Tweet extends Model {
 
 	public User getUser() {
 		return user;
-	}
-
-	public String getRelativeCreated() {
-		return relativeCreated;
 	}
 
 	public boolean isRetweeted() {

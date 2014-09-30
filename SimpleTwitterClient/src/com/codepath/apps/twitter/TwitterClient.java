@@ -35,18 +35,18 @@ public class TwitterClient extends OAuthBaseClient {
 	}
 	
 	public void getHomeTimeline(JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected) {
-		getTimeline("statuses/home_timeline.json", handler, sinceId, maxId, connected);
+		getTimeline("statuses/home_timeline.json", handler, sinceId, maxId, connected, null);
 	}
 	
 	public void getMentionsTimeline(JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected) {
-		getTimeline("statuses/mentions_timeline.json", handler, sinceId, maxId, connected);
+		getTimeline("statuses/mentions_timeline.json", handler, null, maxId, connected, null);
 	}
 	
-	public void getUserTimeline(JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected) {
-		getTimeline("statuses/user_timeline.json", handler, sinceId, maxId, connected);
+	public void getUserTimeline(JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected, String screenName) {
+		getTimeline("statuses/user_timeline.json", handler, sinceId, maxId, connected, screenName);
 	}
 	
-	private void getTimeline(String url, JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected) {
+	private void getTimeline(String url, JsonHttpResponseHandler handler, String sinceId, String maxId, boolean connected, String screenName) {
 		if (connected) {
 			final String apiUrl = getApiUrl(url);
 			final RequestParams params = new RequestParams();
@@ -56,7 +56,10 @@ public class TwitterClient extends OAuthBaseClient {
 			if (maxId != null) {
 				params.put("max_id", maxId);
 			}
-			final boolean haveParams = !(sinceId == null && maxId == null);
+			if (screenName != null) {
+				params.put("screen_name", screenName);
+			}
+			final boolean haveParams = !(sinceId == null && maxId == null && screenName == null);
 			client.get(apiUrl, haveParams ? params : null, handler);
 		} else {
 			handler.onSuccess(Tweet.recentItemsAsJSONArray(maxId == null ? null : Long.parseLong(maxId)));

@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,11 +50,20 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		return v;
 	}
 	
-	private void loadProfileImage(View v, Tweet tweet) {
+	private void loadProfileImage(View v, final Tweet tweet) {
 		final ImageView ivProfileImage = (ImageView)v.findViewById(R.id.ivProfileImage);
 		ivProfileImage.setImageResource(android.R.color.transparent);
 		final ImageLoader imageLoader = ImageLoader.getInstance();
 		imageLoader.displayImage(tweet.getUser().getProfileImageUrl(), ivProfileImage);
+		
+		ivProfileImage.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final Intent intent = new Intent(getContext(), ProfileActivity.class);
+				intent.putExtra("user", tweet.getUser());
+				getContext().startActivity(intent);
+			}
+		});
 	}
 	
 	private void loadUserName(View v, Tweet tweet) {

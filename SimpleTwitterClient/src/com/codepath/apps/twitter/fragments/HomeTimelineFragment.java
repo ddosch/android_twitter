@@ -1,5 +1,8 @@
 package com.codepath.apps.twitter.fragments;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.json.JSONArray;
 
 import android.os.Bundle;
@@ -29,5 +32,30 @@ public class HomeTimelineFragment extends TweetsListFragment {
 				Log.d("debug", s);
 			}
 		}, sinceId, maxId, isConnected());
+	}
+	
+	@Override
+	protected void getNewestTweets() {
+		long maxId = Long.MIN_VALUE;
+		for (Tweet tweet : tweets) {
+			maxId = Math.max(tweet.getUid(), maxId);
+		}
+		final String sinceId = tweets.isEmpty() ? "1" : "" + maxId;
+		client.getHomeTimeline(new JsonHttpResponseHandler() {
+			@Override
+			public void onSuccess(JSONArray array) {
+				final ArrayList<Tweet> tweets = Tweet.fromJsonArray(array);
+				Collections.reverse(tweets);
+				for (Tweet tweet : tweets) {
+					aTweets.insert(tweet, 0);
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable t, String s) {
+				Log.d("debug", t.toString());
+				Log.d("debug", s);
+			}
+		}, sinceId, null, isConnected());
 	}
 }

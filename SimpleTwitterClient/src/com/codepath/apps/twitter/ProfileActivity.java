@@ -3,14 +3,21 @@ package com.codepath.apps.twitter;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.apps.twitter.fragments.UserTimelineFragment;
 import com.codepath.apps.twitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -18,13 +25,31 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class ProfileActivity extends FragmentActivity {
 
 	private TwitterClient client;
+	private User user;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
 		client = TwitterApp.getRestClient();
-		loadProfile();
+		final Intent intent = getIntent();
+		user = intent.getParcelableExtra("user");
+		if (user == null) {
+			loadProfile();
+		} else {
+			populateProfileHeader(user);
+		}
+		final FragmentManager mgr = getSupportFragmentManager();
+        final FragmentTransaction tx = mgr.beginTransaction();
+        tx.replace(R.id.llTimeline, UserTimelineFragment.newInstance(user));
+        tx.commit();
+	}
+	
+	@Override
+	public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+		final View view = super.onCreateView(parent, name, context, attrs);
+		
+		return view;
 	}
 
 	private void loadProfile() {
@@ -52,10 +77,10 @@ public class ProfileActivity extends FragmentActivity {
 		tvTagLine.setText(user.getTagLine());
 		
 		final TextView tvFollowers = (TextView)findViewById(R.id.tvFollowers);
-		tvFollowers.setText(user.getFollowers() + " followers");
+		tvFollowers.setText(Html.fromHtml("<b>" + user.getFollowers() + "</b> followers"));
 		
 		final TextView tvFollowing = (TextView)findViewById(R.id.tvFollowing);
-		tvFollowing.setText(user.getFollowing() + " following");
+		tvFollowing.setText(Html.fromHtml("<b>" + user.getFollowing() + "</b> following"));
 		
 		final ImageView ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
 		ImageLoader.getInstance().displayImage(user.getProfileImageUrl(), ivProfileImage);

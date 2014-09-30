@@ -1,9 +1,6 @@
 package com.codepath.apps.twitter.fragments;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
-import org.json.JSONArray;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -11,7 +8,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +20,6 @@ import com.codepath.apps.twitter.TweetArrayAdapter;
 import com.codepath.apps.twitter.TwitterApp;
 import com.codepath.apps.twitter.TwitterClient;
 import com.codepath.apps.twitter.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 public abstract class TweetsListFragment extends Fragment {
 
@@ -50,7 +45,7 @@ public abstract class TweetsListFragment extends Fragment {
 		lvTweets.setOnScrollListener(new EndlessScrollListener() {
 		    @Override
 		    public void onLoadMore(int page, int totalItemsCount) {
-		        loadOlderTweets();
+		        loadOlderTweets(totalItemsCount);
 		    }
 		});
 		
@@ -79,31 +74,10 @@ public abstract class TweetsListFragment extends Fragment {
 	    }
 	}
 	
-	protected void getNewestTweets() {
-		long maxId = Long.MIN_VALUE;
-		for (Tweet tweet : tweets) {
-			maxId = Math.max(tweet.getUid(), maxId);
+	protected void loadOlderTweets(int totalItemsCount) {
+		if (totalItemsCount < 10) {
+			return;
 		}
-		final String sinceId = tweets.isEmpty() ? "1" : "" + maxId;
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray array) {
-				final ArrayList<Tweet> tweets = Tweet.fromJsonArray(array);
-				Collections.reverse(tweets);
-				for (Tweet tweet : tweets) {
-					aTweets.insert(tweet, 0);
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable t, String s) {
-				Log.d("debug", t.toString());
-				Log.d("debug", s);
-			}
-		}, sinceId, null, isConnected());
-	}
-	
-	protected void loadOlderTweets() {
 		long minId = Long.MAX_VALUE;
 		for (Tweet tweet : tweets) {
 			minId = Math.min(tweet.getUid(), minId);
@@ -111,6 +85,8 @@ public abstract class TweetsListFragment extends Fragment {
 		final String maxId = tweets.isEmpty() ? null : "" + minId;
 		populateTimeline("1", maxId);
 	}
+
+	protected abstract void getNewestTweets();
 	
 	protected abstract void populateTimeline(String sinceId, String maxId);
 }

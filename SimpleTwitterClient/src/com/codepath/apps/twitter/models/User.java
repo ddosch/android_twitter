@@ -3,12 +3,15 @@ package com.codepath.apps.twitter.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 @Table(name = "Users")
-public class User extends Model {
+public class User extends Model implements Parcelable {
 
 	@Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
@@ -96,4 +99,41 @@ public class User extends Model {
 		}
 		return json;
 	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	private User(Parcel in) {
+		uid = in.readLong();
+		name = in.readString();
+		screenName = in.readString();
+		profileImageUrl = in.readString();
+		tagLine = in.readString();
+		followers = in.readInt();
+		following = in.readInt();
+	}
+	
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeLong(uid);
+		out.writeString(name);
+		out.writeString(screenName);
+		out.writeString(profileImageUrl);
+		out.writeString(tagLine);
+		out.writeInt(followers);
+		out.writeInt(following);
+	}
+	
+	public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+		@Override
+		public User createFromParcel(Parcel source) {
+			return new User(source);
+		}
+		@Override
+		public User[] newArray(int size) {
+			return new User[size];
+		}
+	};
 }

@@ -15,7 +15,6 @@ import com.codepath.apps.twitter.listeners.FragmentTabListener;
 public class TimelineActivity extends FragmentActivity {
 
 	private static final int ACTIVITY_NUM_COMPOSE = 1;
-	private static final int ACTIVITY_NUM_PROFILE = 2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +27,14 @@ public class TimelineActivity extends FragmentActivity {
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowTitleEnabled(true);
-
+		
 		final Tab tab1 = actionBar
 			.newTab()
 			.setText("Home")
 			.setIcon(R.drawable.ic_home)
 			.setTag("HomeTimelineFragment")
 			.setTabListener(new FragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this, "home", HomeTimelineFragment.class));
-
+		
 		actionBar.addTab(tab1);
 		actionBar.selectTab(tab1);
 
@@ -56,17 +55,18 @@ public class TimelineActivity extends FragmentActivity {
     }
 	
 	public void onCompose(MenuItem mi) {
-	     startActivityForResult(new Intent(this, ComposeActivity.class), ACTIVITY_NUM_COMPOSE);
+	    startActivityForResult(new Intent(this, ComposeActivity.class), ACTIVITY_NUM_COMPOSE);
 	}
 	
 	public void onProfile(MenuItem mi) {
-		startActivityForResult(new Intent(this, ProfileActivity.class), ACTIVITY_NUM_PROFILE);
+		startActivity(new Intent(this, ProfileActivity.class));
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == ACTIVITY_NUM_COMPOSE && resultCode == RESULT_OK) {
+			final HomeTimelineFragment homeFragment = 
 //			getNewestTweets();
 		}
 	}
